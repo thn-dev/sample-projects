@@ -1,0 +1,114 @@
+<!--
+*
+* Author: Tri H. Nguyen
+*
+-->
+<project name="greetings-targets" basedir="..">
+    <!-- =================================================================== -->
+    <!-- Properties                                                          -->
+    <!-- =================================================================== -->
+    <property name="greetings.name" value="greetings"/>
+    <property name="greetings.package.path" value="${src.package.path}/greetings"/>
+    <property name="greetings.package.name" value="${src.package.name}.greetings"/>
+
+    <!-- =================================================================== -->
+    <!-- deploy.cmd.greetings                                                -->
+    <!-- =================================================================== -->
+    <target name="deploy.cmd.greetings" depends="dist.cmd.greetings"
+            description="Creates command-line application"
+    >
+        <property name="deploy.greetings" value="${deploy}/greetings"/>
+        <mkdir dir="${deploy.greetings}"/>
+
+        <!-- copy files to deploy/cmd/greetings location -->
+        <copy todir="${deploy.greetings}/config" >
+            <fileset dir="${config}">
+                <include name="log4j.xml" />
+            </fileset>
+        </copy>
+
+        <copy todir="${deploy.greetings}/bin" >
+            <fileset dir="${bin}/${greetings.name}">
+                <include name="greetings_setenv.cmd" />
+            </fileset>
+        </copy>
+
+        <!-- copy JAR files to deploy/cmd/greetings/lib location -->
+        <copy todir="${deploy.greetings}/lib" >
+            <fileset dir="${dist.lib}">
+                <include name="${greetings.name}.jar" />
+                <include name="${ant.project.name}_libs.jar" />
+            </fileset>
+        </copy>
+    </target>
+
+    <!-- dist.cmd.greetings -->
+    <target name="dist.cmd.greetings" depends="dist">
+        <jar jarfile="${dist.lib}/${greetings.name}.jar" basedir="${build.classes}">
+            <include name="${greetings.package.path}/Greetings.class" />
+        </jar>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- deploy.test.greetings                                               -->
+    <!-- =================================================================== -->
+    <target name="deploy.test.greetings" depends="dist.test.greetings"
+            description="Deploy applications for testing"
+    >
+        <property name="deploy.test.greetings" value="${deploy.test}/greetings"/>
+        <mkdir dir="${deploy.test.greetings}"/>
+
+        <!-- copy files to deploy/test/greetings location -->
+        <copy todir="${deploy.test.greetings}/config" >
+            <fileset dir="${config}">
+                <include name="log4j.xml" />
+            </fileset>
+        </copy>
+
+        <copy todir="${deploy.test.greetings}/bin" >
+            <fileset dir="${bin}/${greetings.name}">
+                <include name="greetings_test.cmd" />
+            </fileset>
+        </copy>
+
+        <!-- copy JAR files to deploy/test/greetings/lib location -->
+        <copy todir="${deploy.test.greetings}/lib" >
+            <fileset dir="${dist.lib}">
+                <include name="${greetings.name}.jar" />
+                <include name="${greetings.name}_test.jar" />
+                <include name="${ant.project.name}_libs.jar" />
+            </fileset>
+        </copy>
+    </target>
+
+    <!-- dist.test.greetings target -->
+    <target name="dist.test.greetings" depends="dist.test">
+        <jar jarfile="${dist.lib}/${greetings.name}.jar" basedir="${build.classes}">
+            <include name="${greetings.package.path}/Greetings.class" />
+        </jar>
+
+        <jar jarfile="${dist.lib}/${greetings.name}_test.jar" basedir="${build.test}">
+            <include name="${greetings.package.path}/GreetingsTest.class" />
+        </jar>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- test.cmd.greetings                                                  -->
+    <!-- =================================================================== -->
+    <path id="greetings.classpath">
+        <pathelement location="${config}"/>
+        <pathelement location="${dist.lib}/${greetings.name}.jar"/>
+        <pathelement location="${dist.lib}/${greetings.name}_test.jar"/>
+        <pathelement location="${dist.lib}/${ant.project.name}_libs.jar"/>
+    </path>
+
+    <!-- test.cmd.greetings -->
+    <target name="test.cmd.greetings" depends="dist.test.greetings"
+        description="Tests Greetings module">
+        <junit>
+            <classpath refid="greetings.classpath" />
+            <formatter type="brief" usefile="false" />
+            <test name="${greetings.package.name}.GreetingsTest" />
+        </junit>
+    </target>
+</project>

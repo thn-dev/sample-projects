@@ -1,0 +1,124 @@
+<!-- 
+* Author: Tri H. Nguyen
+* $Revision: $  $Date: $
+*
+-->
+<project name="hello-targets" basedir="..">
+    <!-- =================================================================== -->
+    <!-- Properties                                                          -->
+    <!-- =================================================================== -->
+    <property name="hello.name" value="hello"/>
+    <property name="hello.package.path" value="${src.package.path}/hello"/>
+    <property name="hello.package.name" value="${src.package.name}.hello"/>
+     
+    <!-- =================================================================== -->
+    <!-- deploy.cmd.hello target                                             -->
+    <!-- =================================================================== -->
+    <target name="deploy.cmd.hello" depends="dist.cmd.hello"
+            description="Creates command-line application"
+    >
+        <property name="deploy.cmd.hello" value="${deploy.cmd}/hello"/>
+        <property name="deploy.cmd.hello.lib" value="${deploy.cmd.hello}/lib"/>
+        
+        <mkdir dir="${deploy.cmd.hello}"/>
+        <mkdir dir="${deploy.cmd.hello.lib}"/>
+        
+        <!-- copy files to deploy/cmd/hello location -->
+        <copy todir="${deploy.cmd.hello}" >
+            <fileset dir="${conf}">
+                <include name="log4j.xml" />
+            </fileset>
+            <fileset dir="${scripts}">
+                <include name="hello_setenv.cmd" />
+            </fileset>
+        </copy>
+        
+        <!-- copy files to deploy/cmd/hello/lib location -->
+        <copy todir="${deploy.cmd.hello.lib}" >
+            <fileset dir="${dist.lib}">
+                <include name="${hello.name}.jar" />
+                <include name="${ant.project.name}_libs.jar" />
+            </fileset>
+        </copy>
+    </target>
+    
+    <!-- =================================================================== -->
+    <!-- dist.cmd.hello target                                               -->
+    <!-- =================================================================== -->
+    <target name="dist.cmd.hello" depends="dist">
+        <jar jarfile="${dist.lib}/${hello.name}.jar" basedir="${build.classes}">
+            <include name="${hello.package.path}/Hello.class" />
+        </jar>
+    </target>
+    
+    <!-- =================================================================== -->
+    <!-- deploy.test.hello target                                            -->
+    <!-- =================================================================== -->
+    <target name="deploy.test.hello" depends="dist.test.hello"
+            description="Deploy applications for testing"
+    >
+        <property name="deploy.test.hello" value="${deploy.test}/hello"/>
+        <property name="deploy.test.hello.lib" value="${deploy.test.hello}/lib"/>
+        
+        <mkdir dir="${deploy.test.hello}"/>
+        <mkdir dir="${deploy.test.hello.lib}"/>
+        
+        <!-- copy files to deploy/test/hello location -->
+        <copy todir="${deploy.test.hello}" >
+            <fileset dir="${conf}">
+                <include name="log4j.xml" />
+            </fileset>
+            
+            <fileset dir="${scripts}">
+                <include name="hello_test.cmd" />
+            </fileset>
+        </copy>
+        
+        <!-- copy JAR files to deploy/test/hello/lib location -->
+        <copy todir="${deploy.test.hello.lib}" >
+            <fileset dir="${dist.lib}">
+                <include name="${hello.name}.jar" />
+                <include name="${hello.name}_test.jar" />
+                <include name="${ant.project.name}_libs.jar" />
+            </fileset>
+        </copy>
+    </target>
+    
+    <!-- =================================================================== -->
+    <!-- dist.test.hello target                                              -->
+    <!-- =================================================================== -->
+    <target name="dist.test.hello" depends="dist.test">
+    
+        <!-- build JAR file needed for testing -->
+        <jar jarfile="${dist.lib}/${hello.name}.jar" basedir="${build.classes}">
+            <include name="${hello.package.path}/Hello.class" />
+        </jar>
+        
+        <!-- build JAR file required for testing -->
+        <jar jarfile="${dist.lib}/${hello.name}_test.jar" basedir="${build.test}">
+            <include name="${hello.package.path}/HelloTest.class" />
+        </jar>
+    </target>
+    
+    <!-- =================================================================== -->
+    <!-- test.cmd.hello target                                               -->
+    <!-- =================================================================== -->
+    <path id="hello.classpath">
+        <pathelement location="${conf}"/>
+        <pathelement location="${dist.lib}/${hello.name}.jar"/>
+        <pathelement location="${dist.lib}/${hello.name}_test.jar"/>
+        <pathelement location="${dist.lib}/${ant.project.name}_libs.jar"/>
+    </path>
+
+    <!-- test.cmd.hello target -->
+    <target name="test.cmd.hello" depends="dist.test.hello"
+        description="Tests Hello module"
+    >
+        <junit>
+            <classpath refid="hello.classpath" />
+            <formatter type="brief" usefile="false" />
+            <test name="${hello.package.name}.HelloTest" />
+        </junit>
+    </target>
+    
+</project>
