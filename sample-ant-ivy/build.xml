@@ -1,30 +1,31 @@
-<!-- 
+<!--
 *
 * Author: Tri H. Nguyen
 *
 -->
 <project name="sample-ant" default="dist" basedir=".">
-    
+
     <!-- project's properties -->
-    
+
     <!-- project's specific properties -->
     <property file="build.properties"/>
-    
+
     <!-- generic properties -->
     <import file="ant/properties.xml" />
-    
+
     <!-- utils related targets -->
     <import file="ant/utils-targets.xml" />
-    
+
     <!-- ivy related targets -->
     <import file="ant/ivy-targets.xml" />
-    
+    <import file="ant/publish-targets.xml" />
+
     <!-- project's default targets -->
     <import file="ant/default-targets.xml" />
 
     <!-- project's distribution targets -->
     <import file="ant/dist-targets.xml" />
-    
+
     <!-- project's test targets -->
     <import file="ant/test-targets.xml" />
 
@@ -33,5 +34,5 @@
 
     <!-- Greetings subproject -->
     <import file="ant/greetings-targets.xml" />
-    
+
 </project>
