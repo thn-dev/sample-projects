@@ -1,4 +1,4 @@
-<!-- 
+<!--
 *
 * Author: Tri H. Nguyen
 *
@@ -7,35 +7,43 @@
 
     <!-- Initialize Property Values -->
     <dirname property="proj.home" file="build.xml"/>
-    
+
+    <tstamp>
+      <format property="now_ts" pattern="yyyyMMdd_HHmmss" />
+    </tstamp>
+    <property name="now" value="${now_ts}" />
+    <property name="package.name" value="${ant.project.name}-${version.prefix}.${now}" />
+
     <property name="app.title" value="Sample API"/>
-    <property name="app.name" value="${ant.project.name}-${app.version}"/>
     <property name="app.copyright" value="&#169; 2015 All Rights Reserved"/>
-    
+
     <property name="lib" value="lib"/>
     <property name="config" value="config"/>
     <property name="docs" value="docs"/>
     <property name="bin" value="bin"/>
-    
+
     <!-- source code directories -->
     <property name="src" value="src"/>
     <property name="src.java" value="${src}/java"/>
-    
+
     <property name="src.package.path" value="sample"/>
     <property name="src.package.name" value="sample"/>
 
     <!-- documentation -->
     <property name="javadoc" value="javadoc"/>
-    
+    <property name="reports" value="reports"/>
+
     <!-- build directories -->
     <property name="build" value="build"/>
     <property name="build.classes" value="${build}/classes"/>
-    
+
     <!-- deploy directories -->
     <property name="deploy" value="deploy"/>
-    
+
     <!-- distribution directories -->
     <property name="dist" value="dist"/>
-    <property name="dist.lib" value="${dist}/lib"/>
+    <property name="dist.bin" value="${dist}/bin"/>
+    <property name="dist.lib" value="${dist}/lib" />
+    <property name="dist.config" value="${dist}/config" />
 </project>
 

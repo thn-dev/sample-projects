@@ -28,9 +28,16 @@
         <delete dir="${lib}"/>
         <delete dir="${build}"/>
 
+        <antcall target="clean.lib"/>
         <antcall target="clean.dist"/>
         <antcall target="clean.deploy"/>
         <antcall target="clean.javadoc"/>
+        <antcall target="clean.reports"/>
+    </target>
+
+    <!-- clean.lib target -->
+    <target name="clean.lib">
+        <delete dir="${lib}"/>
     </target>
 
     <!-- clean.dist target -->
@@ -48,40 +55,56 @@
         <delete dir="${javadoc}"/>
     </target>
 
+    <!-- clean.reports target -->
+    <target name="clean.reports">
+        <delete dir="${reports}" />
+    </target>
+
     <!-- =================================================================== -->
     <!-- deploy.* target                                                     -->
     <!-- =================================================================== -->
     <target name="deploy.zip" depends="dist"
         description="Deploy application in zip format">
-        
-        <zip destfile="${deploy}/${app.name}.zip">
-            <zipfileset dir="${dist}" prefix="${app.name}"/>
-        </zip>
+        <antcall target="package.zip">
+          <param name="package.file" value="${deploy}/${package.name}.zip" />
+          <param name="input.location" value="${dist}" />
+          <param name="output.prefix" value="${package.name}" />
+        </antcall>
     </target>
 
-    <target name="deploy.cmd" depends="dist" description="Deploy application">
-        <copy todir="${deploy}/cmd" >
-            <fileset dir="${dist}"/>
+    <target name="deploy.cmd" depends="dist"
+        description="Creates command-line apps for deployment">
+        <copy todir="${deploy.cmd}">
+            <fileset dir="${dist}" />
         </copy>
+
+        <antcall target="update.dir.perm">
+            <param name="dir.perm" value="755" />
+            <param name="dir.home" value="${deploy.cmd}/bin" />
+        </antcall>
     </target>
 
     <!-- =================================================================== -->
     <!-- dist target                                                         -->
     <!-- =================================================================== -->
     <target name="dist">
-        <antcall target="ivy.resolve"/>
-        <antcall target="jar"/>
-        <antcall target="jar.libs"/>
+        <antcall target="jar" />
 
-        <copy todir="${dist}/bin" >
-            <fileset dir="${bin}"/>
+        <copy todir="${dist.lib}">
+            <fileset dir="${lib}/default">
+                <include name="**/*.jar" />
+            </fileset>
         </copy>
 
-        <copy todir="${dist}/config" >
-            <fileset dir="${config}"/>
+        <copy todir="${dist.config}">
+            <fileset dir="${config}" />
+        </copy>
+
+        <copy todir="${dist.bin}">
+            <fileset dir="${bin}" />
         </copy>
     </target>
-    
+
     <!-- =================================================================== -->
     <!-- compile.java target                                                 -->
     <!-- =================================================================== -->
@@ -113,6 +136,7 @@
     <!-- compile and build a JAR file -->
     <target name="jar">
         <antcall target="init"/>
+        <antcall target="ivy.resolve"/>
         <antcall target="compile.java"/>
 
         <jar jarfile="${dist.lib}/${ant.project.name}.jar"
@@ -155,7 +179,7 @@
     <!-- =================================================================== -->
     <!-- javadoc target                                                      -->
     <!-- =================================================================== -->
-    <target name="javadoc">
+    <target name="javadoc" depends="dist">
         <javadoc packagenames="${src.package.name}.*"
            sourcepath="${src.java}"
            destdir="${javadoc}"
@@ -168,7 +192,7 @@
         >
             <classpath>
                 <pathelement path="${classpath}"/>
-                <fileset dir="lib">
+                <fileset dir="${lib}">
                     <include name="**/*.jar"/>
                     <include name="**/*.zip"/>
                 </fileset>

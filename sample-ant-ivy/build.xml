@@ -3,7 +3,7 @@
 * Author: Tri H. Nguyen
 *
 -->
-<project name="sample-ant" default="dist" basedir=".">
+<project name="sample-ant-ivy" default="dist" basedir=".">
 
     <!-- project's properties -->
 

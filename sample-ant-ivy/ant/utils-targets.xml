@@ -1,4 +1,4 @@
-<!-- 
+<!--
 *
 * Author: Tri H. Nguyen
 *
@@ -11,8 +11,8 @@
                 <include name="**/*.sh"/>
             </fileset>
         </chmod>
-    </target>  
-    
+    </target>
+
     <!-- target: update.mongo -->
     <target name="update.mongo">
         <replace file="${conf.file}">
@@ -22,7 +22,7 @@
             <replacefilter token="@mongodb.collection@" value="${mongodb.collection}"/>
         </replace>
     </target>
-    
+
     <!-- target: update.mysql -->
     <target name="update.mysql">
         <replace file="${conf.file}">
@@ -32,5 +32,17 @@
             <replacefilter token="@jdbc.user@" value="${jdbc.user}"/>
             <replacefilter token="@jdbc.password@" value="${jdbc.password}"/>
         </replace>
-    </target>    
+    </target>
+
+    <target name="package.zip">
+        <zip destfile="${package.file}">
+            <zipfileset dir="${input.location}" prefix="${output.prefix}">
+                <exclude name="**/*.sh"/>
+            </zipfileset>
+
+            <zipfileset dir="${input.location}" prefix="${output.prefix}" filemode="755">
+                <include name="**/*.sh"/>
+            </zipfileset>
+        </zip>
+    </target>
 </project>
