@@ -11,6 +11,7 @@
 
   <artifactId>multi-2-commons-a</artifactId>
   <packaging>jar</packaging>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
